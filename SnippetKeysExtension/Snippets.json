@@ -1,0 +1,23 @@
+{
+  "selectionToken": "<#Section#>",
+  "snippets": [
+    {
+      "id": "mark",
+      "title": "MARK",
+      "template": "// MARK: - <#Section#>",
+      "placement": "line"
+    },
+    {
+      "id": "trace",
+      "title": "trace()",
+      "template": "trace(\"\\(<#Section#>)\")",
+      "placement": "inline"
+    },
+    {
+      "id": "parens",
+      "title": "parens",
+      "template": "\\(<#Section#>)",
+      "placement": "inline"
+    }
+  ]
+}

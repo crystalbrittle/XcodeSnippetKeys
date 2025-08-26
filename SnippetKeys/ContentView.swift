@@ -6,54 +6,63 @@
 //
 
 import SwiftUI
-import SwiftData
+import AppKit
 
 struct ContentView: View {
-    @Environment(\.modelContext) private var modelContext
-    @Query private var items: [Item]
-
-    var body: some View {
-        NavigationSplitView {
-            List {
-                ForEach(items) { item in
-                    NavigationLink {
-                        Text("Item at \(item.timestamp, format: Date.FormatStyle(date: .numeric, time: .standard))")
-                    } label: {
-                        Text(item.timestamp, format: Date.FormatStyle(date: .numeric, time: .standard))
-                    }
-                }
-                .onDelete(perform: deleteItems)
-            }
-            .navigationSplitViewColumnWidth(min: 180, ideal: 200)
-            .toolbar {
-                ToolbarItem {
-                    Button(action: addItem) {
-                        Label("Add Item", systemImage: "plus")
-                    }
-                }
-            }
-        } detail: {
-            Text("Select an item")
+  @State private var errorMessage: String?
+  
+  var body: some View {
+    VStack(alignment: .leading, spacing: 16) {
+      Text("SnippetKeys")
+        .font(.title)
+        .bold()
+      
+      Text("Manage your editable Snippets.json used by the Xcode Source Editor Extension.")
+      
+      HStack(spacing: 12) {
+        Button("Open Snippets.json…") {
+          switch AppGroupBootstrap.ensureSnippetsFile() {
+            case .success(let url):
+              NSWorkspace.shared.open(url) // opens in default editor
+            case .failure(let err):
+              errorMessage = err.localizedDescription
+          }
         }
-    }
-
-    private func addItem() {
-        withAnimation {
-            let newItem = Item(timestamp: Date())
-            modelContext.insert(newItem)
+        
+        Button("Reveal in Finder") {
+          switch AppGroupBootstrap.ensureSnippetsFile() {
+            case .success(let url):
+              NSWorkspace.shared.activateFileViewerSelecting([url])
+            case .failure(let err):
+              errorMessage = err.localizedDescription
+          }
         }
-    }
-
-    private func deleteItems(offsets: IndexSet) {
-        withAnimation {
-            for index in offsets {
-                modelContext.delete(items[index])
-            }
+      }
+      
+      Divider()
+      
+      VStack(alignment: .leading, spacing: 6) {
+        Text("App Group").bold()
+        Text(AppGroupBootstrap.groupID)
+          .font(.system(.body, design: .monospaced))
+        if let path = AppGroupBootstrap.snippetsFilePath {
+          Text("Path:")
+          Text(path)
+            .font(.system(.footnote, design: .monospaced))
+            .foregroundStyle(.secondary)
+            .lineLimit(3)
+            .textSelection(.enabled)
         }
+      }
+      
+      Spacer()
     }
-}
-
-#Preview {
-    ContentView()
-        .modelContainer(for: Item.self, inMemory: true)
+    .padding()
+    .alert("Error", isPresented: Binding(get: { errorMessage != nil },
+                                         set: { if !$0 { errorMessage = nil } })) {
+      Button("OK", role: .cancel) { }
+    } message: {
+      Text(errorMessage ?? "")
+    }
+  }
 }
