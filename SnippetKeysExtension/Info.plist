@@ -8,6 +8,17 @@
     <dict>
       <key>XCSourceEditorExtensionPrincipalClass</key>
       <string>$(PRODUCT_MODULE_NAME).SourceEditorExtension</string>
+      <key>XCSourceEditorCommandDefinitions</key>
+      <array>
+        <dict>
+          <key>XCSourceEditorCommandClassName</key>
+          <string>$(PRODUCT_MODULE_NAME).InsertSnippetCommand</string>
+          <key>XCSourceEditorCommandIdentifier</key>
+          <string>$(PRODUCT_BUNDLE_IDENTIFIER).InsertSnippetCommand</string>
+          <key>XCSourceEditorCommandName</key>
+          <string>Insert Snippet</string>
+        </dict>
+      </array>
     </dict>
     <key>NSExtensionPointIdentifier</key>
     <string>com.apple.dt.Xcode.extension.source-editor</string>
